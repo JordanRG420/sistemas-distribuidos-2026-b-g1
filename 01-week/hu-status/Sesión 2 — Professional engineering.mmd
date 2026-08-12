@@ -1,0 +1,40 @@
+flowchart TD
+
+    INTRO["<b>Professional Engineering Foundations</b><br/>Practices, architectures and workflows<br/>used to build reliable distributed systems<br/>that can survive production environments."]
+
+    A(("Engineering<br/>Foundations"))
+
+    INTRO --- A
+
+    A --> B["DDD"]
+    A --> C["Hexagonal<br/>Architecture"]
+    A --> D["SOLID &<br/>Clean Code"]
+    A --> E["Resilience<br/>Patterns"]
+    A --> F["Testing<br/>Strategy"]
+    A --> G["Agile & Git<br/>Workflow"]
+    A --> H["Weekly<br/>Delivery"]
+
+    B --> B1["Bounded Contexts<br/>Aggregates<br/>Domain Events"]
+
+    C --> C1["Ports & Adapters<br/>Business Logic Isolated<br/>Dependency Rule"]
+
+    D --> D1["SRP & DIP<br/>Small Functions<br/>Clear Naming"]
+
+    E --> E1["Circuit Breaker<br/>Saga<br/>Outbox<br/>CQRS"]
+
+    F --> F1["Unit Tests<br/>Integration Tests<br/>Contract Tests<br/>E2E Tests"]
+
+    G --> G1["Scrum Sprints<br/>Backlog & Stories<br/>develop → qa → main"]
+
+    H --> H1["Fork Repository<br/>Evidence of Work<br/>README Report"]
+
+    style INTRO fill:#FEF9E7,stroke:#B7950B,stroke-width:1.5px,color:#1B2631
+    style A fill:#2C3E50,color:#ffffff,stroke:#1B2631,stroke-width:2px
+
+    style B fill:#D5F5E3,stroke:#239B56
+    style C fill:#D5F5E3,stroke:#239B56
+    style D fill:#D5F5E3,stroke:#239B56
+    style E fill:#D5F5E3,stroke:#239B56
+    style F fill:#D5F5E3,stroke:#239B56
+    style G fill:#D5F5E3,stroke:#239B56
+    style H fill:#D5F5E3,stroke:#239B56

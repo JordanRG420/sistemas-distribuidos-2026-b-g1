@@ -1,0 +1,44 @@
+flowchart TD
+
+    INTRO["<b>Distributed Systems Foundations</b><br/>Study of how applications operate<br/>across multiple networked nodes,<br/>dealing with time, failures,<br/>consistency and communication."]
+
+    A(("Distributed<br/>Systems"))
+
+    INTRO --- A
+
+    A --> B["Distribution"]
+    A --> C["Failure Models"]
+    A --> D["Logical Time"]
+    A --> E["Consistency"]
+    A --> F["Replication"]
+    A --> G["Consensus"]
+    A --> H["Communication"]
+
+    B --> B1["No Shared State<br/>No Global Clock<br/>Partial Failures"]
+
+    C --> C1["Crash-Stop<br/>Crash-Recovery<br/>Omission<br/>Byzantine"]
+
+    D --> D1["Happens-Before<br/>Lamport Clocks<br/>Causality"]
+
+    E --> E1["Strong<br/>Causal<br/>Eventual"]
+
+    E --> E2["CAP & PACELC"]
+
+    F --> F1["Replication<br/>Sharding<br/>Quorums"]
+
+    G --> G1["Raft<br/>Leader & Followers<br/>Majority Agreement"]
+
+    H --> H1["Synchronous<br/>Asynchronous"]
+
+    H --> H2["At-Most-Once<br/>At-Least-Once<br/>Idempotency"]
+
+    style INTRO fill:#FEF9E7,stroke:#B7950B,stroke-width:1.5px
+    style A fill:#2C3E50,color:#ffffff,stroke:#1B2631,stroke-width:2px
+
+    style B fill:#D6EAF8,stroke:#2874A6
+    style C fill:#D6EAF8,stroke:#2874A6
+    style D fill:#D6EAF8,stroke:#2874A6
+    style E fill:#D6EAF8,stroke:#2874A6
+    style F fill:#D6EAF8,stroke:#2874A6
+    style G fill:#D6EAF8,stroke:#2874A6
+    style H fill:#D6EAF8,stroke:#2874A6
