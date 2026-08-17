@@ -66,7 +66,7 @@
 ## 6. Evidence links
 
 - ADR-001: Initial Architecture of the Sales Management System 
-- Contribution to Architecture Decision: [`ADR-001 Initial Architecture.md`](.\ADR-001 Initial Architecture.md)
+- Contribution to Architecture Decision: [`ADR-001 Initial Architecture.md`](./ADR-001%20Initial%20Architecture.md)
 - PDR: Sales Management System for SynkroTech SAS
 - GitHub Project Board [(to be created)](https://github.com/users/AsolanoT/projects/4)
 - Pull Request: Pending
