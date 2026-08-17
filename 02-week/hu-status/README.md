@@ -26,10 +26,8 @@
 
 | HU ID | Title | Status (todo/doing/done) | Evidence (PR or commit URL) |
 |---|---|---|---|
-| HU-ADR-01 | Define project context and architectural requirements for ADR-001 | done | https://github.com/AsolanoT/sistemas-distribuidos-2026-b-g1/blob/main/02-week/hu-status/adr-001-architecture.md |
-| HU-ADR-02 | Define architectural decision and service boundaries | doing | https://github.com/AsolanoT/sistemas-distribuidos-2026-b-g1/blob/main/02-week/hu-status/adr-001-architecture.md |
-| HU-ADR-03 | Evaluate and document architectural alternatives | doing | https://github.com/AsolanoT/sistemas-distribuidos-2026-b-g1/blob/main/02-week/hu-status/adr-001-architecture.md |
-| HU-ADR-04 | Analyze architectural consequences and trade-offs | doing | https://github.com/AsolanoT/sistemas-distribuidos-2026-b-g1/blob/main/02-week/hu-status/adr-001-architecture.md |
+| HU-PDR-001 | Define the purpose, business context, and project scope of the Sales Management System for the Preliminary Design Review document | done | https://github.com/JordanRG420/sistemas-distribuidos-2026-b-g1/blob/main/01-week/hu-status/pdr.md |
+| HU-ADR-01 | Document the context of the architecture decision | done | https://github.com/JordanRG420/sistemas-distribuidos-2026-b-g1/blob/main/02-week/hu-status/ADR-001%20Initial%20Architecture.md |
 
 ## 2. My individual contribution
 
