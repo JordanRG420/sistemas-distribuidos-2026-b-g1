@@ -1,0 +1,307 @@
+openapi: 3.0.3
+info:
+  title: SynkroTech Sales Service API
+  version: 1.0.0
+  description: >
+    Sale registration (called internally by synkro-workflow's Saga, not
+    directly by the frontend), sale lookup, and the 3 report endpoints
+    (FR-008, FR-009). Reports are served via live aggregation over
+    sales/sale_details — sales_summary exists in the schema (ADR-001 §7
+    is immutable) but is not populated (ADR-002, "Resolution of
+    sales_summary").
+
+    NOTE ON `from`/`to` DATE FILTERS: the 3 report endpoints accept
+    optional from/to query parameters, added here as a practical UX
+    need beyond ADR-002's reference aggregation queries, which had no
+    date filtering at all. Formalized in ADR-004 §3.
+
+servers:
+  - url: http://localhost:8084/api/sales
+    description: Local
+
+security:
+  - bearerAuth: []
+
+paths:
+  /:
+    post:
+      summary: Register a sale (Saga step 3)
+      tags: [Sales]
+      description: >
+        Called internally by synkro-workflow only (ADR-003 §4, Saga
+        step 3) — not exposed as a direct frontend action. By the time
+        this is called, the customer is already confirmed active and
+        stock is already reserved; this endpoint's job is to persist
+        the sale and write the SaleCompleted event to the outbox in the
+        same transaction (ADR-003 §5). The X-User-Id/X-User-Roles
+        headers from the original request are propagated by
+        synkro-workflow so created_by (ADR-002) reflects the actual
+        salesperson, not synkro-workflow's own identity.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaleRequest'
+      responses:
+        '201':
+          description: Sale registered, SaleCompleted event written to outbox
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+        '422':
+          description: >
+            A line's subtotal does not equal quantity * unitPrice
+            (entities-and-rules.md, SaleDetail invariant).
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+              example:
+                error: INVARIANT_VIOLATION
+                message: subtotal must equal quantity * unitPrice
+
+  /{id}:
+    get:
+      summary: Retrieve a sale by ID
+      tags: [Sales]
+      description: >
+        Allowed roles — ADMIN (any sale), SALESPERSON (own sales only —
+        filtered by created_by matching X-User-Id, ADR-002).
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Sale found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sale'
+        '403':
+          description: Role not authorized, or SALESPERSON requesting another user's sale
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+        '404':
+          description: Sale not found or not active
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+
+  /reports/daily:
+    get:
+      summary: Daily sales totals (FR-008)
+      tags: [Reports]
+      description: >
+        Base aggregation mirrors ADR-002's reference query: SUM(total)
+        grouped by DATE(date) over active sales, newest day first.
+        SALESPERSON sees only their own sales' contribution to each
+        day's total. `from`/`to` are added here beyond ADR-002's
+        reference query — formalized in ADR-004 §3.
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - $ref: '_shared.yaml#/components/parameters/PageParam'
+        - $ref: '_shared.yaml#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of daily totals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    day:
+                      type: string
+                      format: date
+                    dailyTotal:
+                      type: number
+                      format: decimal
+        '403':
+          description: Role not authorized (e.g. INVENTORY)
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+
+  /reports/monthly:
+    get:
+      summary: Monthly sales totals (FR-008)
+      tags: [Reports]
+      description: >
+        Same aggregation as /reports/daily, grouped by month instead of
+        day. `from`/`to` carry the same note: added as a practical need
+        beyond ADR-002's reference query — formalized in ADR-004 §3.
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - $ref: '_shared.yaml#/components/parameters/PageParam'
+        - $ref: '_shared.yaml#/components/parameters/LimitParam'
+      responses:
+        '200':
+          description: List of monthly totals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    month:
+                      type: string
+                      format: date
+                      description: First day of the month, e.g. "2026-09-01".
+                    monthlyTotal:
+                      type: number
+                      format: decimal
+        '403':
+          description: Role not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+
+  /reports/top-products:
+    get:
+      summary: Best-selling products (FR-009)
+      tags: [Reports]
+      description: >
+        Base aggregation mirrors ADR-002's reference query exactly:
+        SUM(quantity) grouped by product_id over active sale_details,
+        ordered descending, default limit 10. `from`/`to` are added
+        here beyond that reference query — formalized in ADR-004 §3.
+      parameters:
+        - $ref: '#/components/parameters/FromDate'
+        - $ref: '#/components/parameters/ToDate'
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 10
+      responses:
+        '200':
+          description: List of top-selling products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    productId:
+                      type: string
+                      format: uuid
+                    totalSold:
+                      type: integer
+        '403':
+          description: Role not authorized
+          content:
+            application/json:
+              schema:
+                $ref: '_shared.yaml#/components/schemas/Error'
+
+components:
+  parameters:
+    FromDate:
+      name: from
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: >
+        Inclusive lower bound on the report's date range. Not part of
+        ADR-002's original reference query — added as a practical
+        filtering need; see this endpoint's own description.
+    ToDate:
+      name: to
+      in: query
+      required: false
+      schema:
+        type: string
+        format: date
+      description: Inclusive upper bound on the report's date range.
+
+  schemas:
+    SaleDetailRequest:
+      type: object
+      required: [productId, quantity, unitPrice, subtotal]
+      properties:
+        productId:
+          type: string
+          format: uuid
+        quantity:
+          type: integer
+          exclusiveMinimum: 0
+        unitPrice:
+          type: number
+          format: decimal
+          exclusiveMinimum: 0
+          description: >
+            Frozen at the moment of sale — copied from the product's
+            current price when synkro-workflow built this request, not
+            re-read here (entities-and-rules.md, SaleDetail invariant).
+        subtotal:
+          type: number
+          format: decimal
+          description: Must equal quantity * unitPrice.
+
+    SaleRequest:
+      type: object
+      required: [customerId, items]
+      properties:
+        customerId:
+          type: string
+          format: uuid
+          description: External reference to customers.customer_id — already validated active by synkro-workflow (Saga step 1).
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: '#/components/schemas/SaleDetailRequest'
+
+    Sale:
+      type: object
+      properties:
+        saleId:
+          type: string
+          format: uuid
+        customerId:
+          type: string
+          format: uuid
+        createdBy:
+          type: string
+          format: uuid
+          description: External reference to auth.users.user_id (ADR-002) — the salesperson, propagated from X-User-Id, not synkro-workflow's identity.
+        date:
+          type: string
+          format: date-time
+        total:
+          type: number
+          format: decimal
+          description: Sum of all items' subtotal.
+        active:
+          type: boolean
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/SaleDetailRequest'
