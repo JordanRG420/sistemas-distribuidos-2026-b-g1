@@ -12,10 +12,14 @@
 |-----|--------|-----------|---------|-------------|-----------|
 | Cut 1 | Sprint 1-3 (docs discovery) | 22 | 22 | 0 | 22 |
 | Cut 2 | Sprint 4 (catalog + product def. + panoramic MVP) | 5 | 5 | 0 | 5 |
-| Cut 3 | Sprint 5-7 (architecture decisions, domain events, UML, review corrections) | 14 | 14 | 0 | 14 |
-| Cut 4 | Sprint 8-9 (DB topology correction, API contracts rewrite, governance alignment, pre-code readiness) | 52 | 52 | 8 | 44 |
+| Cut 3 | Sprint 5-7 (architecture decisions, domain events, UML, review corrections) | 15 | 15 | 0 | 15 |
+| Cut 4 | Sprint 8-9 (DB topology correction, API contracts rewrite, governance alignment, pre-code readiness) | 52 | 52 | per board | per board |
+| Cut 5 | Sprint 9-10 (two database engines, Angular Customers portal — ADR-010 to ADR-012 and downstream documents) | 13 | 13 | 1 | 12 |
+| Cut 6 | Sprint 10-11 (first code delivery: host, gateway, two portals on simulated services, base structure of services and databases) | 19 | 19 | 18 | 1 |
 
-> *In progress* counts every open HU, started or not. Cut 4 total = HU-08 continued (2) + HU-09 (7) + HU-10 (15) + HU-11 (9) + HU-12 (10) + HU-13 (9).
+> *In progress* counts every open HU, started or not. Cut 4 total = HU-08 continued (2) + HU-09 (7) + HU-10 (15) + HU-11 (9) + HU-12 (10) + HU-13 (9) = 52. Cut 5 total = HU-ARQ-23 to 26 (4) + HU-DOCS-80 to 88 (9) = 13. Cut 6 total = the 19 code stories of the first delivery (`HU-INF-01` through `HU-PRO-04`, listed below).
+>
+> Cuts group HUs by theme, and the velocity table of `00-governance/agile-conventions.md` counts them by calendar week, so the two do not add up row by row. They reconcile: Cut 4 (52) = Sprint 8 (26) − 2 HUs that stay in Cut 3 (HU-DOCS-32, HU-ARQ-16) + Sprint 9 (19 done + 9 of HU-13, status per board). Cut 1 and the early sprints (0 to 6) are not reconciled here. Cut 5 and Cut 6 are both counted within Sprint 9-11 of the velocity table, not as separate sprint rows of their own.
 
 ---
 
@@ -46,6 +50,7 @@
 | HU-ARQ-16 | Java appendix + `_stacks/` refs | HU-08 (#31) | Done | `hexagonal-architecture.md` (Java code moved to appendix, Go-only main body) |
 
 > HU-DOCS-32 and HU-ARQ-16 belong to HU-08 (#31) and stay in this table with their epic; they were executed in week 8.
+> HU-DOCS-25 and HU-DOCS-26 share one row, so this table has 14 rows for 15 HUs: 3 (weeks 5-6) + 10 (week 7) + 2 (week 8).
 
 ---
 
@@ -134,17 +139,104 @@
 
 | HU ID | Title | Status | Resolved in |
 |---|---|---|---|
-| HU-DOCS-71 | Rename DDL schema prefixes to `<domain>_schema` in `models.md` | Not started | — |
-| HU-DOCS-72 | Rewrite the Auth API contract and align `authentication.md` | Not started | — |
-| HU-DOCS-73 | Rewrite the Customers API contract | Not started | — |
-| HU-DOCS-74 | Align the Go and Java stack guides with the project decisions | Not started | — |
-| HU-DOCS-75 | Align `domain-map.md` with the saga and the workflow | Not started | — |
-| HU-DOCS-76 | Sweep stale references in context and governance documents | Not started | — |
-| HU-DOCS-77 | Close Cut 4 in the backlog and fix pending references | Done | `user-stories.md`, `agile-conventions.md`, `risks.md`, `technical-backlog.md`, `authentication.md`, `navigation-map.md`, `diagram-index.md` |
-| HU-DOCS-78 | Complete the ⭐ documents of `09-microservices/` and `15-project-control/` | Not started | — |
-| HU-DOCS-79 | Adapt contributing, onboarding, TDD and `10-devops/` documents | Not started | — |
+| HU-DOCS-71 | Rename DDL schema prefixes to `<domain>_schema` in `models.md` | Done | — |
+| HU-DOCS-72 | Rewrite the Auth API contract and align `authentication.md` | Done | — |
+| HU-DOCS-73 | Rewrite the Customers API contract | Done | — |
+| HU-DOCS-74 | Align the Go and Java stack guides with the project decisions | Done | `_stacks/go.md`, `_stacks/java-spring.md` |
+| HU-DOCS-75 | Align `domain-map.md` with the saga and the workflow | Done | `02-domain/domain-map.md` |
+| HU-DOCS-76 | Sweep stale references in context and governance documents | Done | — |
+| HU-DOCS-78 | Complete the ⭐ documents of `09-microservices/` and `15-project-control/` | Done | — |
+| HU-DOCS-79 | Adapt contributing, onboarding, TDD and `10-devops/` documents | Done | — |
 
 HU-DOCS-71 to HU-DOCS-73 were deferred from HU-DOCS-55 and HU-DOCS-56 (HU-DOCS-71 was identified while closing HU-DOCS-55); they are scheduled here.
+
+### HU-14 — Two database engines, mixed-framework frontend and code-phase backlog
+
+| HU ID | Title | Status | Resolved in |
+|---|---|---|---|
+| HU-ARQ-23 | ADR-010 — Sales domain on MongoDB and the MongoDB infrastructure repository | Done | `ADR-010-sales-on-mongodb.md` |
+| HU-ARQ-24 | Spike and ADR-011 — Angular customers portal inside the React host | Done | `ADR-011-angular-customers-portal.md` |
+| HU-ARQ-25 | ADR-012 — instance bootstrap, service users and environment files | Done | `ADR-012-instance-bootstrap-and-environments.md` |
+| HU-ARQ-26 | ADR-013 — the identity service as the cross-cutting security service | In progress — `Proposed`, pending the instructor's answer | `ADR-013-identity-as-cross-cutting-security.md` |
+| HU-DOCS-80 | Rewrite the Sales data model as documents | Done | `06-data/models.md`, `data-dictionary.md`, `02-domain/entities-and-rules.md`, `09-microservices/data-ownership-matrix.md`, `01-context/glossary.md`, `synkro-sales-api.yaml`, `synkro-workflow.yaml` |
+| HU-DOCS-81 | Update deployment for two engines and per-environment files | Done | `05-architecture/deployment.md`, `cross-cutting.md`, `10-devops/` |
+| HU-DOCS-82 | Align overview, context, service catalog and C4 | Done | `05-architecture/overview.md`, `01-context/overview.md`, `01-context/scope.md`, `09-microservices/service-catalog.md`, `dependency-map.md`, `_stacks/README.md`, `_stacks/go.md`, `08-uml/diagram-index.md`, `c4-02-containers.drawio` |
+| HU-DOCS-83 | Align security documents and non-functional requirements | Done | `00-governance/security-policy.md`, `security-rules.md`, `05-architecture/security-threat-model.md`, `04-requirements/non-functional.md` |
+| HU-DOCS-84 | Extend the testing strategy for frontend, MongoDB and mocks | Done | `11-quality/testing-strategy.md`, `tdd-guide.md` |
+| HU-DOCS-85 | Add the frontend stack guide and shared design tokens | Done | `_stacks/frontend.md` (new), `12-ux-ui/design-system.md` |
+| HU-DOCS-86 | Assign screens to portals and define view states | Done | `12-ux-ui/navigation-map.md`, `wireframes.md` |
+| HU-DOCS-87 | Add the code-phase backlog, story prefixes and traceability | In progress | `agile-conventions.md`, `user-stories.md`, `traceability-matrix.md` |
+| HU-DOCS-88 | Update open questions, risks, dependencies and technical backlog | Not started | — |
+
+---
+
+## Cut 5 — Two Database Engines and the Angular Customers Portal (Weeks 9-10)
+
+> See the HU-14 table above for the 13 stories and their current status.
+> This cut corrects the single-PostgreSQL-instance model to two engines
+> (ADR-010) and introduces the Angular Customers portal (ADR-011), both
+> required by the course architecture; ADR-012 and ADR-013 are the
+> operational decisions that correction needed.
+
+---
+
+## Cut 6 — First Code Delivery (Weeks 10-11)
+
+> Code stories. Each one has its full specification (story, acceptance
+> criteria with at least one error scenario, technical notes, first test to
+> write, dependencies and points) in its GitHub Issue; this table marks its
+> status. Every code pull request references its story as
+> `code-corhuila/synkro-docs#<issue>`. The test is written before the code
+> it verifies (`11-quality/tdd-guide.md`).
+>
+> Goal: the host and two portals working through the gateway against
+> services simulated from the contracts, and every service and PostgreSQL
+> database repository with its base structure and a green pipeline.
+
+| HU ID | Title | Repository | Points | Priority | Status |
+|---|---|---|---|---|---|
+| HU-INF-01 | Common files in every code repository | all code repositories | 3 | Must | **Done** |
+| HU-INF-02 | Infrastructure skeleton and development identity | `synkro-infra-postgres` | 5 | Must | Not started |
+| HU-INF-03 | Simulated services from the contracts | `synkro-infra-postgres` | 3 | Must | Not started |
+| HU-GTW-01 | Gateway routes and its own behavior | `synkro-api-gateway` | 3 | Must | Not started |
+| HU-FE-03 | Host: single HTTP client, session and development sign-in | `synkro-front` | 5 | Must | Not started |
+| HU-FE-04 | Host: portal registry, isolation, layout and not found | `synkro-front` | 3 | Must | Not started |
+| HU-PRO-01 | Products portal: list products | `synkro-products-portal` | 3 | Must | Not started |
+| HU-PRO-02 | Products portal: register a product | `synkro-products-portal` | 3 | Must | Not started |
+| HU-VEN-01 | Sales portal: register a sale | `synkro-sales-portal` | 5 | Must | Not started |
+| HU-VEN-02 | Sales portal: sales history | `synkro-sales-portal` | 3 | Could | Not started |
+| HU-AUTH-01 | Base structure of the Auth service | `synkro-auth-api` | 3 | Should | Not started |
+| HU-CLI-01 | Base structure of the Customers service | `synkro-customers-api` | 3 | Should | Not started |
+| HU-PRO-03 | Base structure of the Products service | `synkro-products-api` | 2 | Should | Not started |
+| HU-VEN-03 | Base structure of the Sales service | `synkro-sales-api` | 2 | Should | Not started |
+| HU-WKF-01 | Base structure of the workflow | `synkro-workflow` | 3 | Should | Not started |
+| HU-WRK-01 | Base structure of the worker | `synkro-worker` | 2 | Should | Not started |
+| HU-AUTH-02 | Base structure of the Auth database repository | `synkro-auth-db` | 2 | Should | Not started |
+| HU-CLI-02 | Base structure of the Customers database repository | `synkro-customers-db` | 2 | Should | Not started |
+| HU-PRO-04 | Base structure of the Products database repository | `synkro-products-db` | 2 | Should | Not started |
+
+Total: 57 points (Must 33, Should 21, Could 3). 3 points (HU-INF-01) done.
+
+**Not in this cut, and why:**
+
+| Repository | Waits for |
+|---|---|
+| `synkro-sales-db` | ADR-010 is accepted; still waits on `synkro-infra-mongo` being created by the instructor |
+| `synkro-infra-mongo` | Its creation by the instructor (requested in the same issue as the `synkro-infra-postgres` rename, [#159](https://github.com/code-corhuila/synkro-docs/issues/159)) |
+| `synkro-customers-portal` (screens beyond a first one) | ADR-011 is accepted, but its internal-routing risk is still open — must be verified as part of this portal's own acceptance criteria before it grows past one screen |
+| `synkro-auth-portal` | The Auth service; the development sign-in of the host covers identity until then |
+
+**Next cut — not refined yet:**
+
+| Planned story | Prefix | Requirement |
+|---|---|---|
+| Product catalog on the real service, replacing its simulated service | `PRO` | FR-002, FR-003, FR-004 |
+| Customer registration and lookup, service and portal | `CLI` | FR-001 |
+| Login, refresh and token issuance with RS256 | `AUTH` | FR-010 |
+| Sale registration saga and sale persistence (MongoDB) | `WKF`, `VEN` | FR-005, FR-006, FR-007 |
+| Daily, monthly and best-selling reports (MongoDB aggregation pipelines), service and screens | `VEN` | FR-008, FR-009 |
+| Low-stock job | `WRK` | FR-004 |
+| Stock alerts screen, Sale detail screen, Users and Service tokens screens | `PRO`, `VEN`, `AUTH` | FR-004; `12-ux-ui/navigation-map.md`'s new screens (HU-DOCS-86) |
 
 ---
 

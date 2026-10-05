@@ -23,18 +23,24 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 
 | FR ID | Description | HU(s) | Contract | Tests that verify it | Service (target) | Status |
 |-------|-------------|-------|----------|----------------------|------------------|--------|
-| FR-001 | Register, update, view, and deactivate customers | HU-ARQ-07 (Corte 1 monolith backend) | `synkro-customers-api.yaml` | — | `synkro-customers-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-002 | Register, update, view, and deactivate products | HU-ARQ-07 | `synkro-products-api.yaml` (Products) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-003 | Organize products by category | HU-ARQ-07 | `synkro-products-api.yaml` (Categories) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-004 | Control available stock of each product | HU-ARQ-07 | `synkro-products-api.yaml` (Stock Adjustments, Stock Alerts) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-005 | Register a sale associating a customer with products | HU-ARQ-07 | `synkro-workflow.yaml` (POST /sagas/register-sale); `synkro-sales-api.yaml` (POST /sales) | — | `synkro-workflow` → `synkro-sales-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-006 | Automatically calculate the total amount of a sale | HU-ARQ-07 | `synkro-sales-api.yaml` (RegisterSaleRequest) | — | `synkro-sales-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-007 | Automatically deduct stock when a sale is registered | HU-ARQ-07 | `synkro-products-api.yaml` (Stock Reservations) | — | `synkro-workflow` → `synkro-products-api` | 🟡 Implemented in monolith, no automated tests |
-| FR-008 | Generate daily and monthly sales reports | — | `synkro-sales-api.yaml` (/reports/daily, /monthly) | — | `synkro-sales-api` | 🔴 Pending — reporting screens out of Corte 1 scope |
-| FR-009 | Generate a report of the best-selling products | — | `synkro-sales-api.yaml` (/reports/top-products) | — | `synkro-sales-api` | 🔴 Pending — reporting screens out of Corte 1 scope |
-| FR-010 | Authenticate users and restrict by role | HU-FE-02 (Corte 1 monolith frontend, simulated) | `synkro-auth-api.yaml` | — | `synkro-auth-api` | 🟡 Simulated — user picker, no real JWT |
+| FR-001 | Register, update, view, and deactivate customers | HU-ARQ-07 (Corte 1 monolith backend) | `synkro-customers-api.yaml` | — | `synkro-customers-api` | 🟡 Implemented in monolith, no automated tests; no code story refined yet for the real service |
+| FR-002 | Register, update, view, and deactivate products | HU-ARQ-07; HU-PRO-01, HU-PRO-02 (portal, on a simulated service) | `synkro-products-api.yaml` (Products) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, real service in the next one |
+| FR-003 | Organize products by category | HU-ARQ-07; HU-PRO-02 (category selection in the portal) | `synkro-products-api.yaml` (Categories) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, real service in the next one |
+| FR-004 | Control available stock of each product | HU-ARQ-07; HU-PRO-01 (stock shown in the portal) | `synkro-products-api.yaml` (Stock Adjustments, Stock Alerts) | — | `synkro-products-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, real service in the next one |
+| FR-005 | Register a sale associating a customer with products | HU-ARQ-07; HU-VEN-01, HU-VEN-02 (portal, on simulated services) | `synkro-workflow.yaml` (POST /sagas/register-sale); `synkro-sales-api.yaml` (POST /sales) | — | `synkro-workflow` → `synkro-sales-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, saga and service (MongoDB, ADR-010) in the next one |
+| FR-006 | Automatically calculate the total amount of a sale | HU-ARQ-07; HU-VEN-01 (total shown in the portal) | `synkro-sales-api.yaml` (RegisterSaleRequest) | — | `synkro-sales-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, real service in the next one |
+| FR-007 | Automatically deduct stock when a sale is registered | HU-ARQ-07; HU-VEN-01 (rejection for insufficient stock shown in the portal) | `synkro-products-api.yaml` (Stock Reservations) | — | `synkro-workflow` → `synkro-products-api` | 🟡 Implemented in monolith, no automated tests; portal planned in the first code delivery, real service in the next one |
+| FR-008 | Generate daily and monthly sales reports | — | `synkro-sales-api.yaml` (/reports/daily, /monthly) | — | `synkro-sales-api` | 🔴 Pending — reporting screens out of Corte 1 scope; no code story refined yet |
+| FR-009 | Generate a report of the best-selling products | — | `synkro-sales-api.yaml` (/reports/top-products) | — | `synkro-sales-api` | 🔴 Pending — reporting screens out of Corte 1 scope; no code story refined yet |
+| FR-010 | Authenticate users and restrict by role | HU-FE-02 (Corte 1 monolith frontend, simulated); HU-FE-03, HU-FE-04 (session, route guard and role menu with a development token) | `synkro-auth-api.yaml` | — | `synkro-auth-api` | 🟡 Simulated — user picker, no real JWT; development identity planned in the first code delivery, real RS256 issuance in the next one |
 
-**Note on the "Tests" column:** every row is empty because Corte 1 was a proof-of-concept monolith without TDD. Tests will be written when the code phase begins on the 4 real microservices, following Pillar 2 (TDD: red → green → refactor).
+**Note on the "Tests" column:** every row is still empty. No code story
+is finished except HU-INF-01 (common repository files, done Week 9), which
+has no FR of its own — it is scaffolding, not a requirement implementation
+(see its row in the inverse traceability table below). From the first
+code stories on, each one names the first test to write, and its file is
+recorded here when the story closes. The Corte 1 monolith had no
+automated tests and is not counted.
 
 **Note on the "Service" column:** the column shows the target service (the microservice that will own this FR per `09-microservices/service-catalog.md`), not the monolith where the Corte 1 implementation currently lives. FR-005 and FR-007 name `synkro-workflow` as the entry point because the sale-registration saga orchestrates the stock reservation and sale registration across domains (ADR-007).
 
@@ -51,10 +57,10 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | NFR-003 | Scalability | Stateless service instances | Code review | — | 🟡 Design principle adopted, no automated verification |
 | NFR-004 | Security | JWT RS256 validated locally + RBAC | Security contract tests | Postman + manual review | 🟡 Controls defined in `security-policy.md`, not automated |
 | NFR-005 | Observability | Security events logged | Log review | — | 🔴 Defined in `security-policy.md`, not implemented |
-| NFR-006 | Maintainability | One PR per service, no cross-service coupling | PR review | — | 🟡 Principle adopted, manual verification |
-| NFR-007 | Portability | Reproducible Docker containers | `docker compose up` | Docker Compose | 🟡 Documented in `deployment.md`, functional locally |
+| NFR-006 | Maintainability | One PR per service, no cross-service coupling | PR review | — | 🟡 Principle adopted; HU-INF-01 (Week 9) gives every repository its first green pipeline, a first concrete check toward this NFR |
+| NFR-007 | Portability | Reproducible Docker containers, two engines (PostgreSQL + MongoDB, ADR-010) | `docker compose up` | Docker Compose | 🟡 Documented in `deployment.md`, functional locally for the PostgreSQL side; the MongoDB instance waits on `synkro-infra-mongo` |
 | NFR-008 | Disaster Recovery | RTO/RPO defined | — | — | 🔴 Aspirational — no production environment |
-| NFR-009 | Data Integrity | Zero `DELETE` against business tables | Static grep in code | grep / code review | 🟡 Principle adopted (soft delete), manual verification |
+| NFR-009 | Data Integrity | Zero `DELETE` against business tables; zero document-removal calls in Sales' persistence adapter | Static grep in code | grep / code review | 🟡 Principle adopted (soft delete), manual verification |
 
 ---
 
@@ -64,8 +70,31 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 |----|-------|---------------------|-------------|
 | HU-ARQ-07 | Backend: monolithic MVP setup | FR-001 through FR-007 (Corte 1 monolith) | Week 5 |
 | HU-FE-02 | Frontend: monolithic MVP setup | FR-010 (simulated) | Week 5 |
+| HU-INF-01 | Common files in every code repository | NFR-006 — pipeline green on `develop` in all 17 repositories | Week 9, **Done** |
+| HU-INF-02 | Infrastructure skeleton and development identity | NFR-007, NFR-004 — composition valid; bootstrap script runs twice without error | Week 10 |
+| HU-INF-03 | Simulated services from the contracts | NFR-007 — smoke script through the gateway, one route per simulated service | Week 10 |
+| HU-GTW-01 | Gateway routes and its own behavior | NFR-004, NFR-005 — `tests/smoke.sh` (401, 404, 429, 503, CORS, correlation) | Week 10 |
+| HU-FE-03 | Host: single HTTP client, session and development sign-in | FR-010 (development identity), NFR-004, NFR-005 — client tests: 401 closes the session, timeout, error message | Week 10 |
+| HU-FE-04 | Host: portal registry, isolation, layout and not found | FR-010, NFR-006 — a remote that fails shows the notice and the layout stays | Week 10 |
+| HU-PRO-01 | Products portal: list products | FR-002, FR-004 — four view states; newest request wins | Week 10-11 |
+| HU-PRO-02 | Products portal: register a product | FR-002, FR-003 — money from text; idempotency key reused; errors per field | Week 10-11 |
+| HU-VEN-01 | Sales portal: register a sale | FR-005, FR-006, FR-007 — rejected registration shows the failed step; no double submit | Week 10-11 |
+| HU-VEN-02 | Sales portal: sales history | FR-005 — four view states; access refused to INVENTORY | Week 10-11 |
+| HU-AUTH-01 | Base structure of the Auth service | NFR-002, NFR-006 — `/health` without a token; architecture check | Week 10-11 |
+| HU-CLI-01 | Base structure of the Customers service | NFR-002, NFR-004, NFR-006 — `/health`; token of another key rejected | Week 10-11 |
+| HU-PRO-03 | Base structure of the Products service | NFR-002, NFR-006 — `/health`; 401 with the common envelope | Week 10 |
+| HU-VEN-03 | Base structure of the Sales service | NFR-002, NFR-006 — `/health`; 401 with the common envelope; its persistence adapter targets MongoDB (ADR-010) once built | Week 10-11 |
+| HU-WKF-01 | Base structure of the workflow | NFR-002, NFR-006 — `/health`; architecture check | Week 10-11 |
+| HU-WRK-01 | Base structure of the worker | NFR-005, NFR-006 — run cancelled at its time limit; next run starts | Week 10-11 |
+| HU-AUTH-02 | Base structure of the Auth database repository | NFR-007, NFR-004 — rebuild check: migrate, zero changes, roll back, migrate | Week 10-11 |
+| HU-CLI-02 | Base structure of the Customers database repository | NFR-007, NFR-004 — rebuild check | Week 10-11 |
+| HU-PRO-04 | Base structure of the Products database repository | NFR-007, NFR-004 — rebuild check; privilege check across the three PostgreSQL schemas | Week 10-11 |
 
-**Note:** the remaining ~25 HUs (HU-PDR-*, HU-ADR-*, HU-DOCS-*, HU-ARQ-09 through 13) are documentation stories — they do not implement FRs in the code-with-TDD sense. This table will be populated as the code phase begins with the `AUTH`, `CLI`, `PRO`, `VEN` prefixes.
+**Note:** documentation stories (HU-PDR-*, HU-ADR-*, HU-DOCS-*, HU-ARQ-*)
+do not implement requirements in code and are not listed here. Code
+stories use the `AUTH`, `CLI`, `PRO`, `VEN`, `FE`, `INF`, `GTW`, `WKF`
+and `WRK` prefixes defined in `00-governance/agile-conventions.md`,
+"Story identifiers".
 
 ---
 
@@ -83,15 +112,19 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 
 ## Identified gaps (requirements without coverage)
 
-> Updated in Week 6 as part of HU-DOCS-27.
+> Updated in Week 9 as part of HU-DOCS-87.
 
 | Gap type | Description | Required action | Owner | When |
 |----------|-------------|----------------|-------|------|
-| FR without tests | All 10 FRs lack automated tests — Corte 1 was a monolith without TDD | Write tests before production code when starting the microservices phase (Pillar 2: TDD) | Whole team | Week 7+ |
-| FR without code HU | FR-008 and FR-009 (reports) have no assigned implementation HU | Create HU with `VEN` prefix in the sprint the PO prioritizes reports | Product Owner | Pending prioritization |
-| FR-010 simulated | Authentication is a user picker, not real JWT | Create HU with `AUTH` prefix for real JWT RS256 implementation | Whole team | Week 7+ |
-| NFR without validation | 6 of 9 NFRs have no automated or manual validation | Define tools and thresholds before the first code sprint | Whole team | Week 7 |
-| Test coverage | ~~The minimum coverage threshold required by the DoD has not been set~~ — **Resolved**: ≥ 90/80/60/80% set in `testing-strategy.md` and referenced from the DoD | — | — | Closed |
+| FR without tests | All 10 FRs still lack automated tests — Corte 1 was a monolith without TDD, and no Cut 6 code story has closed yet except HU-INF-01, which has no FR of its own | Each code story writes its test first; the file is recorded here when the story closes | Whole team | From Week 10 |
+| FR without code HU | FR-001, FR-008 and FR-009 have no refined code story | Refine the planned `CLI` and `VEN` stories listed in `user-stories.md`, "Next cut" | Product Owner | Planning of the next cut |
+| FR-010 partial | Cut 6 delivers session and route guard with a development token; no real login yet | Refine the planned `AUTH` story for RS256 issuance | Whole team | Planning of the next cut |
+| Portals on simulated services | The portals of Cut 6 are verified against the contracts, not against real services | Replace each simulated service when its real service is delivered (`15-project-control/technical-backlog.md`) | Whole team | Next cut |
+| Sales' real database untested | `synkro-sales-db` and `synkro-sales-api`'s MongoDB adapter cannot be integration-tested until `synkro-infra-mongo` exists | Build and test against the in-memory repository until then (ADR-010, "What must be watched") | Whole team | Pending the instructor's response on #159 |
+| Angular portal routing unverified | ADR-011's internal-routing risk has not been closed by any story yet | Verify as acceptance criteria on the first story that builds `synkro-customers-portal`'s routed screens | Whole team | Next cut |
+| Users / Service tokens screens have no list endpoint | `synkro-auth-api.yaml` has no "list users" or "list service tokens" endpoint — only creation and lookup by ID (`12-ux-ui/navigation-map.md`, HU-DOCS-86) | Decide whether a list endpoint is needed; if so, add it to `synkro-auth-api.yaml` through a new ADR-004-style extension | Product Owner | Pending prioritization |
+| NFR without validation | 7 of 9 NFRs still have no automated validation | Cut 6 adds the first automated checks for NFR-002, NFR-004, NFR-005, NFR-006 and NFR-007 through its stories; update the NFR matrix as each one closes | Whole team | From Week 10 |
+| Test coverage | ~~The minimum coverage threshold required by the DoD has not been set~~ — **Resolved**: ≥ 90/80/60/80% set in `testing-strategy.md` for the backend, ≥ 85/70/70% for the frontend, and referenced from the DoD | — | — | Closed |
 
 ---
 
@@ -110,7 +143,7 @@ If there is code without an HU: possible gold-plating or bug introduced without 
 | MVP Definition | Candidate features | `01-context/scope.md`, "MVP Scope" | ✅ Done |
 | MVP Definition | Corte 1 scope (what's in) | `01-context/scope.md`, "MVP Scope" | ✅ Done |
 | MVP Definition | What's out of scope | `01-context/scope.md`, "Explicitly Out of Scope" + `problem-framing.md`, §8 | ✅ Done |
-| Initial Design | Wireframes/mockups | `12-ux-ui/wireframes.md` | 🟡 In progress (HU-DOCS-18) |
+| Initial Design | Wireframes/mockups | `12-ux-ui/wireframes.md` | ✅ Done |
 | Initial Design | Initial data model | `02-domain/domain-map.md` + `entities-and-rules.md` | ✅ Done |
 | Initial Design | Main user flows | `12-ux-ui/navigation-map.md`, "Main user flows" (Flow 1-5) | ✅ Done |
 | Documentation | Consolidate everything in `docs` | This same table — each piece lives in its correct folder per that folder's own README | ✅ Done |

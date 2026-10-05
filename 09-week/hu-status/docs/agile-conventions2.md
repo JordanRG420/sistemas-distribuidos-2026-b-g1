@@ -12,8 +12,8 @@
 | Duration | 1 week |
 | Sprint start | Monday |
 | Sprint end | Sunday |
-| Current sprint | Sprint 9 — Week 9 of the project (16 weeks total) |
-| Estimated capacity | No point estimation yet (see note below) |
+| Current sprint | Sprint 10 — Week 10 of the project (16 weeks total) |
+| Estimated capacity | Point estimation starts in Sprint 10 with the first code stories (see "Estimation" below — it already says point estimation applies "from the first real product HUs," which this sprint is) |
 
 > **Note:** The team uses **HU (User Story) as the only work item type**, without distinguishing Task/Spike/HU — this includes both product features and documentation/research tasks (PDR, ADR, context map, governance, etc.). Point estimation (see scale below) starts once real product feature HUs (code) exist; it does not apply to documentation HUs.
 
@@ -79,6 +79,29 @@
 
 ---
 
+## Story identifiers
+
+Every story is `HU-<PREFIX>-NN`. Each prefix has one sequence shared by the whole team; it never restarts by person, sprint or cut.
+
+| Prefix | Scope | Next number |
+|--------|-------|-------------|
+| `DOCS` | Documents of `synkro-docs` | 89 |
+| `ARQ` | Architecture decisions (ADR) and their spikes | 27 |
+| `PDR`, `ADR`, `DOM` | Discovery stories of Cut 1; closed, no new numbers | — |
+| `AUTH` | Auth domain: `synkro-auth-db`, `synkro-auth-api`, `synkro-auth-portal` | 03 |
+| `CLI` | Customers domain: its database repository, service and portal | 03 |
+| `PRO` | Products domain: its database repository, service and portal | 05 |
+| `VEN` | Sales domain: its database repository, service and portal | 04 |
+| `FE` | `synkro-front`, the frontend host | 05 |
+| `INF` | `synkro-infra-postgres`, `synkro-infra-mongo` and work that touches every repository | 04 |
+| `GTW` | `synkro-api-gateway` | 02 |
+| `WKF` | `synkro-workflow` | 02 |
+| `WRK` | `synkro-worker` | 02 |
+
+A story belongs to the prefix of the repository it changes. A code pull request references its story as `code-corhuila/synkro-docs#<issue>`; a story that needs changes in two domains is split into one story per domain.
+
+---
+
 ## Backlog tool
 
 **Tool:** GitHub Projects
@@ -105,7 +128,8 @@
 | Sprint 5-6 (weeks 5-6) | 3 HU | ADR-001 publication, deployment + threat model, ADR-002 sale authorship (HU-04) |
 | Sprint 7 (week 7) | 10 HU | FR/NFR unification and traceability matrix (HU-DOCS-25, 26, 27), git-conventions alignment (HU-DOCS-28), ADR-003 + downstream and hexagonal architecture guide (HU-ARQ-14, 15), domain events and UML diagrams (HU-DOCS-29, 30), and the first two review corrections — PR #17 citation and C4 sync note (HU-DOCS-31, 33) |
 | Sprint 8 (week 8) | 26 HU | HU-08 remaining corrections (HU-DOCS-32, 34, 41 and HU-ARQ-16); HU-09 first-pass contracts (7 HU); HU-10 architecture decisions — ADR-005 to ADR-008 and downstream documents (15 HU) |
-| Sprint 9 (week 9) | 19 HU | HU-11 DB topology correction (ADR-009) and contract rewrites (9 HU); HU-12 governance, context, requirements and architecture alignment (10 HU). HU-13 (9 HU: Auth and Customers contracts, DDL prefixes, domain map, context sweep, backlog closure, stack guides, ⭐ documents, developer documents) is in progress and is added to this row when the sprint closes |
+| Sprint 9 (week 9) | 19 HU | HU-11 DB topology correction (ADR-009) and contract rewrites (9 HU); HU-12 governance, context, requirements and architecture alignment (10 HU). HU-13 (9 HU: Auth and Customers contracts, DDL prefixes, domain map, context sweep, backlog closure, stack guides, ⭐ documents, developer documents) status confirmed against the board before merging this row — mark its 9 HUs Done here once confirmed |
+| Sprint 10 (week 10) | — | Two database engines and the Angular Customers portal (ADR-010 to ADR-012, HU-14: 13 HU). First code sprint starts in parallel: common repository files across all 17 code repositories (HU-INF-01, done), the base structure of `synkro-products-api` and the gateway/host pieces that depend on no pending ADR. Filled in when the sprint closes |
 | Average | — | Will be calculated once implementation starts (story points) |
 
 > **Note:** sprint labels/week mapping above follow the pattern already
@@ -113,6 +137,14 @@
 > occasional 2-week or split sprints). Confirm these labels match the
 > team's actual sprint calendar before merging — this file infers them
 > from work already delivered, not from an authoritative sprint log.
+
+> **Cuts and sprints:** `04-requirements/user-stories.md` groups HUs by cut, not by
+> calendar week, so its totals differ from the rows above. They reconcile: Cut 4 (52) =
+> Sprint 8 (26) − 2 HUs that stay in Cut 3 (HU-DOCS-32, HU-ARQ-16) + Sprint 9 (19 done
+> + 9 of HU-13, status per the board). HU-14 (13 HU: ADR-010 to ADR-012 and their
+> downstream documents) is a new cut, Cut 5 below, counted separately since it
+> belongs to the two-engine/Angular correction, not the original Cut 4 themes.
+> Cut 6 holds the code-phase stories, counted in story points from Sprint 10.
 
 ---
 
