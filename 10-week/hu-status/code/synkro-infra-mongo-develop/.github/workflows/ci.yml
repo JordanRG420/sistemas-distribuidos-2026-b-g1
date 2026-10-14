@@ -1,0 +1,59 @@
+name: MongoDB infrastructure and Sales integration
+
+on:
+  push:
+    branches: [develop, qa, main, feat/mongodb-instance-and-bootstrap, 'fix/**']
+  pull_request:
+    branches: [develop, qa, main]
+
+permissions:
+  contents: read
+
+jobs:
+  mongodb-infrastructure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Read-only checkout of the reviewed Sales runner
+        uses: actions/checkout@v4
+        with:
+          repository: code-corhuila/synkro-sales-db
+          ref: 9cfbde7db4bea7bacad70370c60f91f8eb917c04
+          path: .runtime/sales
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax, lint and configuration regressions
+        run: node -- scripts/check.mjs
+      - name: Real authentication, bootstrap, persistence and isolated recovery
+        run: node -- tests/integration.mjs
+      - name: Real Sales migration, replay, permissions, persistence and recovery
+        run: node -- tests/sales-integration.mjs --sales-checkout .runtime/sales
+      - name: Cleanup recorded disposable resources
+        if: always()
+        run: node -- scripts/cleanup.mjs --manifests-dir tests/.artifacts
+      - name: Publish scope and remaining external gates
+        if: always()
+        env:
+          SUITE_RESULT: ${{ job.status }}
+        run: |
+          printf 'Suite result: %s\n' "$SUITE_RESULT" >> "$GITHUB_STEP_SUMMARY"
+          cat >> "$GITHUB_STEP_SUMMARY" <<'SUMMARY'
+          Both real suites are required: independent MongoDB infrastructure and Sales integration
+          pinned at 9cfbde7db4bea7bacad70370c60f91f8eb917c04, including migration replay, permissions,
+          bootstrap preservation, named-volume persistence and application-only restoration.
+          HU completion also requires the separate synkro-docs update and manual peer review.
+          No environment files, diagnostic buffers or archives are published. See docs/handoff.md.
+          SUMMARY
+      - name: Preserve resource identities only (no env files, secrets or archives)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: disposable-resource-identities
+          path: tests/.artifacts/**/manifest.json
+          include-hidden-files: true
+          if-no-files-found: ignore

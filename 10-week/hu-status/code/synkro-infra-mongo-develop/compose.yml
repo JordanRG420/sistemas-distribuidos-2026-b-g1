@@ -1,0 +1,54 @@
+services:
+  synkro-mongo:
+    image: mongo:7.0@sha256:1f995ad6fdb93244a1addab1b58f934a0bc2f5643c38e02f5e9d7f0c7d227a7b
+    entrypoint: [bash, /opt/synkro/entrypoint.sh]
+    init: true
+    restart: "no"
+    stop_grace_period: 30s
+    environment:
+      MONGO_REPLICA_SET: ${MONGO_REPLICA_SET:?set MONGO_REPLICA_SET}
+      MONGO_STARTUP_TIMEOUT_SECONDS: ${MONGO_STARTUP_TIMEOUT_SECONDS:?set MONGO_STARTUP_TIMEOUT_SECONDS}
+      MONGO_CONNECT_TIMEOUT_MS: ${MONGO_CONNECT_TIMEOUT_MS:?set MONGO_CONNECT_TIMEOUT_MS}
+    secrets: [mongo-admin, mongo-app, mongo-internal-key]
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+      - ./mongo/scripts:/opt/synkro:ro
+    tmpfs: [/tmp]
+    expose: ["27017"]
+    networks:
+      platform:
+        aliases: [synkro-mongo]
+    labels:
+      io.synkro.infra.managed: mongo
+      io.synkro.infra.disposable: ${MONGO_DISPOSABLE:-false}
+      io.synkro.infra.test-run: ${MONGO_TEST_RUN:-persistent}
+    healthcheck:
+      test: [CMD, bash, /opt/synkro/health.sh]
+      interval: 10s
+      timeout: 15s
+      start_period: 10s
+      retries: 3
+
+volumes:
+  mongo-data:
+    labels:
+      io.synkro.infra.disposable: ${MONGO_DISPOSABLE:-false}
+      io.synkro.infra.test-run: ${MONGO_TEST_RUN:-persistent}
+  mongo-config:
+    labels:
+      io.synkro.infra.disposable: ${MONGO_DISPOSABLE:-false}
+      io.synkro.infra.test-run: ${MONGO_TEST_RUN:-persistent}
+
+networks:
+  platform:
+    external: true
+    name: ${MONGO_NETWORK:?set MONGO_NETWORK}
+
+secrets:
+  mongo-admin:
+    file: ${MONGO_SECRET_DIR:?use scripts/mongo.mjs}/admin.json
+  mongo-app:
+    file: ${MONGO_SECRET_DIR:?use scripts/mongo.mjs}/app.json
+  mongo-internal-key:
+    file: ${MONGO_SECRET_DIR:?use scripts/mongo.mjs}/internal-key
