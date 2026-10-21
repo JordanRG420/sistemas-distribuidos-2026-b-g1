@@ -1,0 +1,79 @@
+groups:
+  - name: synkro-register-sale-availability-burn-rate
+    rules:
+      # Multi-window burn-rate alert for SLO 1 (05-slo.md): 99.5%
+      # availability of the register-sale saga over a 30-day window, so
+      # (1 - 0.995) = 0.005 is the fraction of the budget available.
+      #
+      # Each alert checks burn rate over two windows (a long one and a
+      # short one, 1/12th of it) and only fires when BOTH agree — the
+      # short window stops a brief blip from paging anyone, and the long
+      # window stops a single bad minute from looking like a trend.
+      #
+      # error_ratio = 1 - (good saga completions / saga attempts)
+      # burn_rate   = error_ratio / (1 - SLO)
+      # A burn_rate of 14.4 for a full hour would exhaust the entire
+      # 30-day budget in 2% of the window (~1 hour); a burn_rate of 6 for
+      # six hours would exhaust 5% of it.
+
+      - alert: RegisterSaleAvailabilityBurnRateFast
+        expr: |
+          (
+            (
+              1 -
+              (
+                sum(rate(workflow_saga_steps_total{step="register-sale",outcome="success"}[1h]))
+                /
+                sum(rate(workflow_saga_steps_total{step="validate-customer"}[1h]))
+              )
+            ) / 0.005 > 14.4
+          )
+          and
+          (
+            (
+              1 -
+              (
+                sum(rate(workflow_saga_steps_total{step="register-sale",outcome="success"}[5m]))
+                /
+                sum(rate(workflow_saga_steps_total{step="validate-customer"}[5m]))
+              )
+            ) / 0.005 > 14.4
+          )
+        for: 5m
+        labels:
+          severity: critical
+          team: synkro-workflow
+        annotations:
+          summary: "register-sale is burning its 30-day availability budget at 14.4x (1h and 5m windows agree) — at this rate the whole month's budget is gone in about 1 hour."
+          runbook_url: "https://github.com/JordanRG420/synkro-docs/blob/main/11-week/workshop/07-runbook.md#fast-burn-register-sale-availability"
+
+      - alert: RegisterSaleAvailabilityBurnRateSlow
+        expr: |
+          (
+            (
+              1 -
+              (
+                sum(rate(workflow_saga_steps_total{step="register-sale",outcome="success"}[6h]))
+                /
+                sum(rate(workflow_saga_steps_total{step="validate-customer"}[6h]))
+              )
+            ) / 0.005 > 6
+          )
+          and
+          (
+            (
+              1 -
+              (
+                sum(rate(workflow_saga_steps_total{step="register-sale",outcome="success"}[30m]))
+                /
+                sum(rate(workflow_saga_steps_total{step="validate-customer"}[30m]))
+              )
+            ) / 0.005 > 6
+          )
+        for: 30m
+        labels:
+          severity: warning
+          team: synkro-workflow
+        annotations:
+          summary: "register-sale is burning its 30-day availability budget at 6x (6h and 30m windows agree) — at this rate the whole month's budget is gone in about 5 hours."
+          runbook_url: "https://github.com/JordanRG420/synkro-docs/blob/main/11-week/workshop/07-runbook.md#slow-burn-register-sale-availability"
