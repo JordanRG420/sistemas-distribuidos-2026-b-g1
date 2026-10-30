@@ -35,5 +35,8 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - name: Negative authorization tests
-        run: ./mvnw -B test -Dtest=CustomersAuthorizationNegativeTest
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Real-PostgreSQL test suite, includes the negative authorization test
+        run: node tests/verify.mjs
