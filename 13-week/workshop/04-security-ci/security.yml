@@ -1,6 +1,6 @@
 name: security-gates
 
-on:
+"on":
   pull_request:
     branches: [main, qa, develop]
 

@@ -17,9 +17,53 @@ builds/tests with Maven/Java 21):
 node tests/verify.mjs
 ```
 
-There is no isolated single-test command for this one: the test boots the
-full Spring context over a real HTTP port, so it needs the same disposable
-PostgreSQL fixture every other HTTP test in this module needs.
+## Console output (actual run, 2026-10-31)
+
+```
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running co.edu.corhuila.synkro.customers.app.CustomersAuthorizationNegativeTest
+...Spring Boot context started on a random port (Tomcat)...
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.491 s -- in co.edu.corhuila.synkro.customers.app.CustomersAuthorizationNegativeTest
+[INFO] Running co.edu.corhuila.synkro.customers.app.ConfigurationTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.076 s -- in co.edu.corhuila.synkro.customers.app.ConfigurationTest
+[INFO] Running co.edu.corhuila.synkro.customers.app.JdbcPersistenceTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.608 s -- in co.edu.corhuila.synkro.customers.app.JdbcPersistenceTest
+[INFO] Running co.edu.corhuila.synkro.customers.app.LifecycleHttpTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.548 s -- in co.edu.corhuila.synkro.customers.app.LifecycleHttpTest
+
+[INFO] Results:
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0
+
+[INFO] synkro-customers-api ............................... SUCCESS [  4.465 s]
+[INFO] customers-core ..................................... SUCCESS [ 16.806 s]
+[INFO] customers-adapters ................................. SUCCESS [  4.595 s]
+[INFO] customers-app ...................................... SUCCESS [ 29.035 s]
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:01 min
+[INFO] Finished at: 2026-10-31T05:22:42Z
+```
+
+17 tests total, 0 failures, 0 errors, 0 skipped (combines
+`CustomersAuthorizationNegativeTest`: 1, `ConfigurationTest`: 3,
+`JdbcPersistenceTest`: 4, `LifecycleHttpTest`: 9). Coverage gates also
+passed: domain 100%, application 100%, infrastructure 96.1%, overall 97%,
+each above its required threshold. The disposable PostgreSQL fixture and
+its Flyway migrations provisioned correctly, and fixture cleanup finished
+`PASS`.
+
+## YAML validation
+
+Validated `security.yml` with a YAML parser (`python3 -c
+"yaml.safe_load(...)"`). Found and fixed one real issue: the bare `on:`
+key parses as the boolean `True` under YAML 1.1 (not the string `"on"`),
+so it was quoted as `"on":`. After the fix, the document parses with the
+correct top-level keys (`name`, `on`, `jobs`) and all three jobs
+(`secret-scan`, `dependency-audit`, `authorization-tests`) resolve with
+their expected step counts (2, 3, 4).
 
 ## Notes
 
