@@ -1,0 +1,116 @@
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
+import { readdirSync, readFileSync, existsSync } from 'node:fs';
+import { resolve, relative } from 'node:path';
+import { spawnSync } from 'node:child_process';
+
+const root = resolve(import.meta.dirname, '..');
+test('CONT-01: schema uses the approved family and empty families have placeholders', () => {
+  for (const prefix of ['', '05_rollbacks/']) {
+    assert.ok(existsSync(resolve(root, prefix, '01_ddl/01_schemas')));
+    assert.ok(!existsSync(resolve(root, prefix, '01_ddl/00_schemas')));
+    for (const family of ['02_dml', '04_tcl']) assert.ok(existsSync(resolve(root, prefix, family, 'README.md')));
+  }
+});
+
+test('CONT-02: CI can validate the delivery branch before a PR, preserving permanent events', () => {
+  const workflow = readFileSync(resolve(root, '.github/workflows/ci.yml'), 'utf8');
+  assert.match(workflow, /push:\s*\n\s*branches: \[develop, qa, main, feat\/customers-schema-and-migration-runner\]/);
+  assert.match(workflow, /pull_request:\s*\n\s*branches: \[develop, qa, main\]/);
+  assert.match(workflow, /run: node --test --test-concurrency=1 tests\/integration.test.mjs/);
+  assert.match(workflow, /migration-rebuild:[\s\S]*uses: actions\/checkout@v4\s*\n\s*with:\s*\n\s*fetch-depth: 0/);
+});
+export function sqlFiles(dir) {
+  return readdirSync(dir, { withFileTypes: true }).flatMap(e =>
+    e.isDirectory() ? sqlFiles(resolve(dir, e.name)) : e.name.endsWith('.sql') ? [resolve(dir, e.name)] : []);
+}
+
+test('CONT-06: every historical SQL byte and CODEOWNERS remain intact', () => {
+  // HU-CLI-05 adds V008+/U008+; only the fourteen files of the reviewed commit must stay byte-identical.
+  const paths = ['01_ddl', '02_dml', '03_dcl', '04_tcl', '05_rollbacks'].flatMap(d => sqlFiles(resolve(root, d)))
+    .filter(path => /[VU]00[1-7]__/.test(path));
+  assert.equal(paths.length, 14);
+  paths.push(resolve(root, '.github/CODEOWNERS'));
+  for (const path of paths) {
+    const historical = relative(root, path).replaceAll('\\', '/').replace('/01_schemas/', '/00_schemas/');
+    const blob = spawnSync('git', ['show', `90b02296f7b057a4cfc6fbe6be4f78afe7cbe9a4:${historical}`], { cwd: root });
+    assert.equal(blob.status, 0);
+    if (historical === '.github/CODEOWNERS') {
+      // Git text=auto checks this file out as CRLF on Windows; never rewrite it.
+      assert.equal(readFileSync(path, 'utf8').replaceAll('\r\n', '\n'), blob.stdout.toString('utf8'), historical);
+    } else assert.deepEqual(readFileSync(path), blob.stdout, historical);
+  }
+});
+
+test('CLI-DB-10/14: global versions have matching, family-preserving reversions', () => {
+  const forward = ['01_ddl', '02_dml', '03_dcl', '04_tcl'].flatMap(d => sqlFiles(resolve(root, d)));
+  assert.equal(forward.length, 14);
+  assert.deepEqual(forward.map(f => /V(\d{3})__/.exec(f)?.[1]).sort(),
+    ['001','002','003','004','005','006','007','008','009','010','011','012','013','014']);
+  const rollback = sqlFiles(resolve(root, '05_rollbacks'));
+  assert.equal(rollback.length, forward.length);
+  for (const f of forward) {
+    const inverse = resolve(root, '05_rollbacks', relative(root, f).replace(/V(\d{3})__/, 'U$1__'));
+    assert.ok(rollback.includes(inverse));
+    assert.ok(readFileSync(inverse, 'utf8').trim());
+  }
+});
+
+// Migration policy: outOfOrder is never enabled. A TOML assignment may use any spacing around "=" and may carry a
+// trailing comment; commented-out lines and the value false are not an active setting.
+const OUT_OF_ORDER_TRUE = /^[ \t]*outOfOrder[ \t]*=[ \t]*["']?true["']?[ \t]*(?:#.*)?$/m;
+const enablesOutOfOrder = config => OUT_OF_ORDER_TRUE.test(config);
+
+test('HU-CLI-05 review: the outOfOrder guard detects every valid spelling of an enabled setting and nothing else', () => {
+  for (const enabled of ['outOfOrder=true', 'outOfOrder = true', 'outOfOrder  =  true', 'outOfOrder\t=\ttrue', 'outOfOrder =true', 'outOfOrder= true',
+    '  outOfOrder = true', 'outOfOrder = true # enabled', 'outOfOrder = "true"', '[flyway]\nlocations = []\noutOfOrder = true\ntable = "x"',
+    '[flyway]\r\noutOfOrder = true\r\n'])
+    assert.equal(enablesOutOfOrder(enabled), true, JSON.stringify(enabled));
+  for (const inactive of ['outOfOrder = false', 'outOfOrder=false', 'outOfOrder = false # true', '# outOfOrder = true', '  # outOfOrder=true',
+    '# never set outOfOrder = true here', 'outOfOrder = "false"', 'outOfOrder = truest', 'notOutOfOrder = true', ''])
+    assert.equal(enablesOutOfOrder(inactive), false, JSON.stringify(inactive));
+});
+
+test('HU-CLI-05 review: the committed flyway.toml spelling is the one the guard must detect', () => {
+  const config = readFileSync(resolve(root, 'flyway.toml'), 'utf8');
+  assert.match(config, /^outOfOrder = false$/m);
+  assert.equal(enablesOutOfOrder(config.replace('outOfOrder = false', 'outOfOrder = true')), true);
+});
+
+test('HU-CLI-05: the contacts CHECK is prepared but outside every Flyway location (pending activation, no reserved number)', () => {
+  const config = readFileSync(resolve(root, 'flyway.toml'), 'utf8');
+  assert.ok(config.includes('locations = ["filesystem:01_ddl", "filesystem:02_dml", "filesystem:03_dcl", "filesystem:04_tcl"]'));
+  assert.equal(enablesOutOfOrder(config), false, 'flyway.toml must never enable outOfOrder');
+  for (const f of ['01_ddl', '02_dml', '03_dcl', '04_tcl', '05_rollbacks'].flatMap(d => sqlFiles(resolve(root, d))))
+    assert.doesNotMatch(readFileSync(f, 'utf8'), /chk_customer_contacts_required/, relative(root, f));
+  for (const f of ['require-contacts-check.sql', 'require-contacts-check.rollback.sql', 'README.md'])
+    assert.ok(readFileSync(resolve(root, 'scripts/pending-activation', f), 'utf8').includes('PENDING ACTIVATION'), f);
+  const versions = ['01_ddl', '02_dml', '03_dcl', '04_tcl'].flatMap(d => sqlFiles(resolve(root, d))).filter(f => /V\d{3}__/.test(f)).map(f => Number(/V(\d{3})__/.exec(f)[1]));
+  assert.equal(Math.max(...versions), versions.length);   // contiguous: nothing is reserved for the future activation
+});
+
+test('REV-06: root example exposes both credential modes without a committed password', () => {
+  const example = readFileSync(resolve(root, '.env.example'), 'utf8');
+  for (const key of ['FLYWAY_URL', 'FLYWAY_USER', 'FLYWAY_PASSWORD', 'FLYWAY_PASSWORD_FILE',
+    'CUSTOMERS_FLYWAY_URL', 'DB_ADMIN_USER', 'CUSTOMERS_DB_ADMIN_PASSWORD_FILE', 'COMPOSE_PROJECT_NAME', 'PLATFORM_NETWORK']) {
+    assert.match(example, new RegExp(`^${key}=`, 'm'));
+  }
+  assert.match(example, /^FLYWAY_PASSWORD=$/m);
+});
+
+test('REV-07: JDBC connection, login and socket limits have safe finite defaults', () => {
+  const config = readFileSync(resolve(root, 'flyway.toml'), 'utf8');
+  assert.match(config, /jdbcProperties\.connectTimeout\s*=\s*"5"/);
+  assert.match(config, /jdbcProperties\.loginTimeout\s*=\s*"10"/);
+  assert.match(config, /jdbcProperties\.socketTimeout\s*=\s*"60"/);
+});
+
+test('HU-CLI-05: V008+ are additive (nothing is dropped, deleted or rewritten) and keep the single global sequence', () => {
+  const forward = ['01_ddl', '02_dml', '03_dcl', '04_tcl'].flatMap(d => sqlFiles(resolve(root, d)))
+    .filter(f => Number(/V(\d{3})__/.exec(f)?.[1]) >= 8);
+  assert.equal(forward.length, 7);
+  for (const f of forward) {
+    const text = readFileSync(f, 'utf8').replace(/--.*$/gm, '');
+    assert.doesNotMatch(text, /\b(DROP\s+(TABLE|COLUMN|SCHEMA|CONSTRAINT)|DELETE\s+FROM|TRUNCATE|UPDATE\s+\S+\s+SET|ALTER\s+COLUMN)\b/i, relative(root, f));
+  }
+});
