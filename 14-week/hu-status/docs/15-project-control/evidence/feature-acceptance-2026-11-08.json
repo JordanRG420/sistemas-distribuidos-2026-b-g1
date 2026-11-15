@@ -1,0 +1,29 @@
+{
+  "observed_at": "2026-11-08T16:06:46.352742+00:00",
+  "source": "Prior actual attempt 3; revalidated export, not a new product execution",
+  "passed": true,
+  "root": "a12b61b8babd6d5fa037fe577080deda611b9bc4",
+  "lock_sha256": "555cf37cf0ba511deec7d4c8daa950e686454070e04d7ba580d5d1c231e93f31",
+  "auth17_checks": 44,
+  "ven19_checks": 11,
+  "total_checks": 55,
+  "fixtures": 2,
+  "scope": "three-hus-joint-auth17-ven19: 44+11=55 checks across 2 serial fresh full_composition fixtures, one available-scope three-hus-acceptance suite; not the 21-suite full_platform_accepted scope",
+  "auth_portal": "ff8308101ca8a4c4133498105506dac87ad314da",
+  "sales_portal": "a4fb41c1e7482d4a7d73a022d6694561749b8606",
+  "public_candidate": "9a7d7339725cfd550428118ac190f337ed37a124",
+  "document_pairs": 5,
+  "evidence_hashes": {
+    "isolated-run.json": "da277ac152795d661a98a16b58dea11fea3c1e06ca38e523cda9c92584b15b64",
+    "manifest.json": "b044ff3acbe88997496491c6c4a9def360d393905dc6edfa5cc55b90f135b9f1",
+    "report.md": "665c4dd8cf553186c1467b1baf183df00668e161636a19f86b61c908ca71cbf7",
+    "three-hus-acceptance-result.json": "aafddbaf0338c3c23ab158dc98050853b0fb2270b08f9767f026745059ec2fa7"
+  },
+  "qa_pr": "https://github.com/code-corhuila/synkro-infra-postgres/pull/53",
+  "qa_merge": "70833cf188db226011c9ae2a0dc5a030f8415c5f",
+  "main_pr": "https://github.com/code-corhuila/synkro-infra-postgres/pull/54",
+  "main_head": "d4f9c515f354921edab83ce286e488a70b089b89",
+  "attempt_1": "Engine unavailable before suite start",
+  "attempt_2": "Failed at dashboard heading after 26 checks; cleanup passed; retained",
+  "attempt_3": "Owning suite PASSED/exit 0; outer review-policy exit 2; export and fixture/outer cleanup PASSED"
+}

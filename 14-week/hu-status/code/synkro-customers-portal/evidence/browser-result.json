@@ -1,0 +1,73 @@
+{
+  "scope": "Actual browser, Host, Gateway, Auth, Customers API and disposable PostgreSQL; no API response doubles",
+  "revisions": {
+    "synkro-customers-portal": "295466558092e70765bf6d172aab8f8394bfe851",
+    "synkro-front": "60e675d2fe7e24876624f99877c7b087cea6f539",
+    "synkro-customers-api": "afc67dc2de6bf295d15fea64f68fe1bf4d38484f",
+    "synkro-auth-api": "ec46b78c52c988232131f6e8d9e86aa91685a7fc",
+    "synkro-auth-db": "8a8deb658f0336cc4ad2aaaa7654d7bfd5012a6b",
+    "synkro-customers-db": "b63315ea0ea86382da511db802da2f13bc0b1def",
+    "synkro-auth-portal": "5e3ac4591061c657f871ce5ede4d316029e809f2",
+    "synkro-api-gateway": "24a4ab157bb000e152e5e4567f16deb3ebadcf05",
+    "synkro-sales-portal": "ec7954dc5bd792bd9fe26291624a22e09fe42d5c",
+    "synkro-products-portal": "165694885a83a15c5ce59bad230e9b45cbaa9fff"
+  },
+  "imageIds": {
+    "synkro-auth-api": "sha256:bbaa29d0b270bb467247d15abecb039822d60107711731e883cf16edc1db545d",
+    "synkro-customers-api": "sha256:c77c1d9a75474d73f17ad8f3bf8d5df9b7a968ff4abfeaba9c6c4f05b0f47d1a",
+    "synkro-api-gateway": "sha256:20277691e5654481a9b90bbe67ebb66ba52b68108381443b4ee96b370f9a1508",
+    "synkro-customers-portal": "sha256:72bfaa70f9d7bb1623e5823b62a6023c97c04de6adf25f23f006691064219569",
+    "synkro-auth-portal": "sha256:5b03218d492a04e125021d00478c5ef44c65117c4eeed01a2de7fd36af3f2536",
+    "synkro-products-portal": "sha256:97d20f165b45352a09623e64181f8485f21a1ec188608b75a248e03e7fbc6f89",
+    "synkro-sales-portal": "sha256:250b6f183371c86100d355ff6b0b2665e5d224ff3bfdebc60ee114857284a2d9",
+    "synkro-front": "sha256:b180903bbe04b4172d8b79eb8a45bc26b777cd511fce931f347cf02edfe7ac4f"
+  },
+  "checks": {
+    "loginRestore": "PASS",
+    "emptyContactsRejected": "PASS",
+    "invalidEmailAndPhoneRejected": "PASS",
+    "createdCustomer": "5d082d14-a8ce-4580-a5f4-3542d0b5cc06",
+    "idempotentUncertainRetry": "PASS",
+    "apiRejectsInvalidContactsWithoutWrites": "PASS",
+    "editWithoutEmailRejected": "PASS",
+    "detailAndReplacement": "PASS",
+    "deepLinkRefresh": "PASS",
+    "exactDocumentSearch": "PASS",
+    "backForward": "PASS",
+    "logicalDeleteAndReservedDocument": "PASS",
+    "stableEntryAndHashedAssets": "PASS",
+    "salespersonCreate": "PASS",
+    "inventoryDenied": "PASS",
+    "searchClientValidation": "PASS",
+    "searchNameCaseAccent": "PASS",
+    "searchExactDocumentFirst": "PASS",
+    "searchMaxFiveAndMore": "PASS",
+    "searchEmptyState": "PASS",
+    "searchLoadingState": "PASS",
+    "searchErrorAndRetry": "PASS",
+    "searchStaleResponseDiscarded": "PASS",
+    "searchTextOnlyInBody": "PASS",
+    "keyboardSearch": "PASS",
+    "adminReactivation": "PASS",
+    "salespersonDeniedUiAndApi": "PASS",
+    "searchTextNotInParticipantLogs": "PASS",
+    "mobile": "PASS",
+    "salesWarmOutage": {
+      "status": 502,
+      "seconds": 2.007
+    },
+    "salesAssetRecovery": "PASS",
+    "customersWarmOutage": {
+      "status": 502,
+      "seconds": 2.004
+    },
+    "browserPortalRecovery": "PASS",
+    "customersAssetRecovery": "PASS",
+    "origin127001": "PASS",
+    "noUncaughtBrowserErrors": "PASS"
+  },
+  "owner": "customers-browser-5f3229c490144a1e941c64b63bc69257",
+  "browserVersion": "157.0.4341.42",
+  "status": "PASS",
+  "cleanup": "PASS"
+}
